@@ -23,12 +23,12 @@ export function createEnv<
 
 function handleValidationErrors(errors: z.ZodError['errors']): never {
   const affectedVariables: string[] = []
-  const fieldErrors: Map<string, string> = new Map()
+  const fieldErrors: Record<string, string> = {}
 
   errors.forEach((error) => {
     const fieldName = error.path[0] as string
     affectedVariables.push(fieldName)
-    fieldErrors.set(fieldName, generateErrorMessage(fieldName, error))
+    fieldErrors[fieldName] = generateErrorMessage(fieldName, error)
   })
 
   throw new ValidationError(
