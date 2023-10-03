@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { z } from 'zod'
+import {afterEach, beforeEach, describe, expect, it} from 'vitest'
+import {z} from 'zod'
 
-import { createEnv } from './create-env.js'
-import { ValidationError } from './validation-error.js'
+import {createEnv} from './create-env.js'
+import {ValidationError} from './validation-error.js'
 
 describe('createEnv', () => {
   let originalEnv: NodeJS.ProcessEnv
@@ -36,7 +36,7 @@ describe('createEnv', () => {
 
     expect(env).toEqual({
       nodeEnv: 'development',
-      app: { port: '3000' },
+      app: {port: '3000'},
     })
   })
 
@@ -51,7 +51,7 @@ describe('createEnv', () => {
 
     expect(env).toEqual({
       nodeEnv: 'development',
-      app: { port: 3000 },
+      app: {port: 3000},
     })
   })
 
@@ -67,11 +67,10 @@ describe('createEnv', () => {
       if (e instanceof ValidationError) {
         expect(e.message).toBe(
           'Validation of the following environment variables failed: "APP.PORT"',
-        )
-        expect(e.getFieldError()).toEqual({
-          'APP.PORT':
-            'The value of variable "APP.PORT" must be of type "number", but received "string"',
-        })
+        );
+        expect(e.getFieldError().get('APP.PORT')).toBe(
+          'The value of variable "APP.PORT" must be of type "number", but received "string"',
+        );
       }
     }
   })
@@ -88,11 +87,10 @@ describe('createEnv', () => {
       if (e instanceof ValidationError) {
         expect(e.message).toBe(
           'Validation of the following environment variables failed: "NODE_ENV"',
-        )
-        expect(e.getFieldError()).toEqual({
-          NODE_ENV:
-            'Enum mismatch: The variable "NODE_ENV" must be one of the following values: "production", "test", but received "development"',
-        })
+        );
+        expect(e.getFieldError().get('NODE_ENV')).toBe(
+          'Enum mismatch: The variable "NODE_ENV" must be one of the following values: "production", "test", but received "development"',
+        );
       }
     }
   })
@@ -110,10 +108,9 @@ describe('createEnv', () => {
         expect(e.message).toBe(
           'Validation of the following environment variables failed: "AUTH_SERVICE_HOST"',
         )
-        expect(e.getFieldError()).toEqual({
-          AUTH_SERVICE_HOST:
-            'Missing variable: The variable "AUTH_SERVICE_HOST" is required, but missing',
-        })
+        expect(e.getFieldError().get('AUTH_SERVICE_HOST')).toBe(
+          'Missing variable: The variable "AUTH_SERVICE_HOST" is required, but missing',
+        )
       }
     }
   })
@@ -131,10 +128,9 @@ describe('createEnv', () => {
         expect(e.message).toBe(
           'Validation of the following environment variables failed: "APP.DATABASE.URL"',
         )
-        expect(e.getFieldError()).toEqual({
-          'APP.DATABASE.URL':
+        expect(e.getFieldError().get('APP.DATABASE.URL')).toBe(
             'Format error: The value of variable "APP.DATABASE.URL" must be a valid url',
-        })
+        )
       }
     }
 
@@ -150,10 +146,9 @@ describe('createEnv', () => {
         expect(e.message).toBe(
           'Validation of the following environment variables failed: "APP.DATABASE.URL"',
         )
-        expect(e.getFieldError()).toEqual({
-          'APP.DATABASE.URL':
-            'Format error: The value of variable "APP.DATABASE.URL" must be a valid email',
-        })
+        expect(e.getFieldError().get('APP.DATABASE.URL')).toBe(
+          'Format error: The value of variable "APP.DATABASE.URL" must be a valid email',
+        )
       }
     }
 
@@ -169,10 +164,10 @@ describe('createEnv', () => {
         expect(e.message).toBe(
           'Validation of the following environment variables failed: "APP.DATABASE.URL"',
         )
-        expect(e.getFieldError()).toEqual({
-          'APP.DATABASE.URL':
-            'Format error: The value of variable "APP.DATABASE.URL" must be a valid email',
-        })
+        console.log(e.getFieldError().get('APP.DATABASE.URL'))
+        expect(e.getFieldError().get('APP.DATABASE.URL')).toBe(
+          'Format error: The value of variable "APP.DATABASE.URL" must be a valid email',
+        )
       }
     }
 
@@ -180,7 +175,7 @@ describe('createEnv', () => {
       createEnv(
         process.env,
         z.object({
-          'APP.DATABASE.URL': z.string().includes('@', { position: 1 }),
+          'APP.DATABASE.URL': z.string().includes('@', {position: 1}),
         }),
       )
     } catch (e: unknown) {
@@ -188,10 +183,9 @@ describe('createEnv', () => {
         expect(e.message).toBe(
           'Validation of the following environment variables failed: "APP.DATABASE.URL"',
         )
-        expect(e.getFieldError()).toEqual({
-          'APP.DATABASE.URL':
-            'Format error: The value of variable "APP.DATABASE.URL" must include "@" at position 1',
-        })
+        expect(e.getFieldError().get('APP.DATABASE.URL')).toBe(
+          'Format error: The value of variable "APP.DATABASE.URL" must include "@" at position 1',
+        )
       }
     }
   })
