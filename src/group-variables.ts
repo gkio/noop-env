@@ -1,33 +1,24 @@
 import { camelCase } from './utils/camel-case.js'
 
-interface GroupedObject {
-  [key: string]: string | GroupedObject
-}
+import type { Group } from './group.js'
 
 export function groupVariables<
   TInput extends object,
-  TOutput extends GroupedObject,
+  TOutput = Group<TInput, '.'>,
 >(input: TInput, groupBy = '.'): TOutput {
-  return Object.entries(input).reduce((output, [key, value]) => {
+  return Object.entries(input).reduce((output: TOutput, [key, value]) => {
     key
       .split(groupBy)
-      .reduce(
-        (
-          target: GroupedObject,
-          part: string,
-          index: number,
-          parts: string[],
-        ) => {
-          const camelCasedPart = camelCase(part)
-          if (index === parts.length - 1) {
-            target[camelCasedPart] = value as string
-          } else {
-            target[camelCasedPart] = target[camelCasedPart] || {}
-          }
-          return target[camelCasedPart] as GroupedObject
-        },
-        output,
-      )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .reduce((target: any, part: string, index: number, parts: string[]) => {
+        const camelCasedPart = camelCase(part) as keyof TOutput
+        if (index === parts.length - 1) {
+          target[camelCasedPart] = value
+        } else {
+          target[camelCasedPart] = target[camelCasedPart] || {}
+        }
+        return target[camelCasedPart]
+      }, output)
     return output
   }, {} as TOutput)
 }
